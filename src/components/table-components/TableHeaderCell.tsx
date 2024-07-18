@@ -6,9 +6,6 @@ interface HeaderCellProps extends React.HTMLAttributes<HTMLTableCellElement> {
   id: string;
 }
 
-interface BodyCellProps extends React.HTMLAttributes<HTMLTableCellElement> {
-  id: string;
-}
 interface DragIndexState {
   active: UniqueIdentifier;
   over: UniqueIdentifier | undefined;

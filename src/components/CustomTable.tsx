@@ -28,6 +28,7 @@ import TableBodyCell, {
   DragIndexState,
 } from "./table-components/TableBodyCell";
 import TableHeaderCell from "./table-components/TableHeaderCell";
+import ResizableDraggableTitle from "./table-components/Resizable";
 const baseColumns: TableColumnsType<DataType> = [
   {
     title: "Full Name",
@@ -183,7 +184,7 @@ const CustomTable = () => {
         <DragIndexContext.Provider value={dragIndex}>
           <Table
             components={{
-              header: { cell: TableHeaderCell },
+              header: { cell: ResizableDraggableTitle },
               body: { cell: TableBodyCell },
             }}
             columns={columns}
