@@ -1,4 +1,10 @@
-import { Switch, Table, TableColumnProps, TableColumnsType } from "antd";
+import {
+  Switch,
+  Table,
+  TableColumnProps,
+  TableColumnsType,
+  TableProps,
+} from "antd";
 import React, { createContext, useCallback, useContext, useState } from "react";
 import { DataType, data } from "../configs/data";
 import type {
@@ -8,6 +14,7 @@ import type {
 } from "@dnd-kit/core";
 import {
   closestCenter,
+  defaultDropAnimationSideEffects,
   DndContext,
   DragOverlay,
   PointerSensor,
@@ -35,6 +42,23 @@ const baseColumns: TableColumnsType<DataType> = [
     dataIndex: "name",
     key: "name",
     fixed: "left",
+    filters: [
+      {
+        text: "Joe",
+        value: "Joe",
+      },
+      {
+        text: "Category 1",
+        value: "Category 1",
+      },
+      {
+        text: "Category 2",
+        value: "Category 2",
+      },
+    ],
+    filterMode: "tree",
+    filterSearch: true,
+    onFilter: (value, record) => record.name.startsWith(value as string),
   },
   {
     title: "Age",
@@ -113,7 +137,7 @@ const CustomTable = () => {
     useSensor(PointerSensor, {
       activationConstraint: {
         // https://docs.dndkit.com/api-documentation/sensors/pointer#activation-constraints
-        distance: 1,
+        distance: 10,
       },
     })
   );
@@ -137,6 +161,15 @@ const CustomTable = () => {
       over: over?.id,
       direction: overIndex > activeIndex ? "right" : "left",
     });
+  };
+  const dropAnimation = {
+    sideEffects: defaultDropAnimationSideEffects({
+      styles: {
+        active: {
+          opacity: "0.5",
+        },
+      },
+    }),
   };
 
   //resizing
@@ -164,10 +197,19 @@ const CustomTable = () => {
   const modifiedColumns = columns.map((col, index) => ({
     ...col,
     onHeaderCell: (column: TableColumnProps<DataType>) => ({
-      width: column.width,
+      width: column.width || 0,
       onResize: handleResize(index),
     }),
   }));
+  const onChange: TableProps<DataType>["onChange"] = (
+    pagination,
+    filters,
+    sorter,
+    extra
+  ) => {
+    console.log("params", pagination, filters, sorter, extra);
+  };
+
   return (
     <DndContext
       sensors={sensors}
@@ -186,6 +228,7 @@ const CustomTable = () => {
               header: { cell: TableHeaderCell },
               body: { cell: TableBodyCell },
             }}
+            onChange={onChange}
             columns={columns}
             dataSource={data}
             scroll={{ x: 1500 }}
@@ -210,12 +253,12 @@ const CustomTable = () => {
               </Table.Summary>
             )}
             // antd site header height
-            sticky={{ offsetHeader: 64 }}
+            // sticky={{ offsetHeader: 64 }}
           />
         </DragIndexContext.Provider>
       </SortableContext>
-      <DragOverlay>
-        <th style={{ backgroundColor: "gray", padding: 16 }}>
+      <DragOverlay dropAnimation={dropAnimation}>
+        <th style={{ backgroundColor: "gray", padding: 16, opacity: 0.5 }}>
           {
             columns[columns.findIndex((i) => i.key === dragIndex.active)]
               ?.title as React.ReactNode

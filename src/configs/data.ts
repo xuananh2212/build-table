@@ -6,6 +6,15 @@ export interface DataType {
   age: number;
   address: string;
   children?: DataType[]; // Optional children key
+  render?: (text: string) => React.ReactNode;
+  width?: number;
+  onHeaderCell?: (column: DataType) => {
+    width: number;
+    onResize: (
+      e: React.SyntheticEvent<Element>,
+      data: { size: { width: number } }
+    ) => void;
+  };
   [key: string]: any;
 }
 
