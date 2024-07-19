@@ -1,55 +1,36 @@
 import { UniqueIdentifier } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { createContext, useContext } from "react";
+import { CSS } from "@dnd-kit/utilities";
 
 interface HeaderCellProps extends React.HTMLAttributes<HTMLTableCellElement> {
   id: string;
 }
-interface DragIndexState {
-  active: UniqueIdentifier;
-  over: UniqueIdentifier | undefined;
-  direction?: "left" | "right";
-}
-
-const dragActiveStyle = (dragState: DragIndexState, id: string) => {
-  const { active, over, direction } = dragState;
-  // drag active style
-  let style: React.CSSProperties = {};
-  if (active && active === id) {
-    style = { backgroundColor: "gray", opacity: 0.5 };
-  }
-  // dragover dashed style
-  else if (over && id === over && active !== over) {
-    style =
-      direction === "right"
-        ? { borderRight: "1px dashed gray" }
-        : { borderLeft: "1px dashed gray" };
-  }
-  return style;
-};
-const DragIndexContext = createContext<DragIndexState>({
-  active: -1,
-  over: -1,
-});
 
 const TableHeaderCell: React.FC<HeaderCellProps> = (props) => {
-  const dragState = useContext(DragIndexContext);
-  const { attributes, listeners, setNodeRef, isDragging } = useSortable({
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
     id: props.id,
   });
-  const style: React.CSSProperties = {
-    ...props.style,
+  const dndKitLessonStyle = {
+    transform: CSS.Translate.toString(transform),
+    transition,
     cursor: "move",
-    ...(isDragging
-      ? { position: "relative", zIndex: 9999, userSelect: "none" }
-      : {}),
-    ...dragActiveStyle(dragState, props.id),
+    opacity: isDragging ? 0.5 : undefined,
+    border: isDragging ? "1px solid #fdfeff" : undefined,
   };
+  const bgHeader = isDragging ? { backgroundColor: "gray", opacity: 0.5 } : {};
   return (
     <th
       {...props}
       ref={setNodeRef}
-      style={style}
+      style={{ ...dndKitLessonStyle, ...bgHeader }}
       {...attributes}
       {...listeners}
     />

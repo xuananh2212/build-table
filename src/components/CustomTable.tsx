@@ -156,6 +156,13 @@ const CustomTable = () => {
   const onDragOver = ({ active, over }: DragOverEvent) => {
     const activeIndex = columns.findIndex((i) => i.key === active.id);
     const overIndex = columns.findIndex((i) => i.key === over?.id);
+    if (active.id !== over?.id) {
+      setColumns((prevState) => {
+        const activeIndex = prevState.findIndex((i) => i.key === active?.id);
+        const overIndex = prevState.findIndex((i) => i.key === over?.id);
+        return arrayMove(prevState, activeIndex, overIndex);
+      });
+    }
     setDragIndex({
       active: active.id,
       over: over?.id,
@@ -213,7 +220,7 @@ const CustomTable = () => {
   return (
     <DndContext
       sensors={sensors}
-      modifiers={[restrictToHorizontalAxis]}
+      // modifiers={[restrictToHorizontalAxis]}
       onDragEnd={onDragEnd}
       onDragOver={onDragOver}
       collisionDetection={closestCenter}
